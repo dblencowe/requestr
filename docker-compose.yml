@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=requestr
+      - MARIADB_DATABASE=requestr
+      - MARIADB_PASSWORD=requestr
+    volumes:
+      - mysql:/bitnami/mariadb/data
+
+  requestr:
+    tty: true
+    image: 'bitnami/laravel:latest'
+    labels:
+      kompose.service.type: nodeport
+    environment:
+      - DB_HOST=mariadb
+      - DB_USERNAME=requestr
+      - DB_DATABASE=requestr
+      - DB_PASSWORD=requestr
+    depends_on:
+      - mariadb
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app
+volumes:
+  mysql:
